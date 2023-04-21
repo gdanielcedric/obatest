@@ -1,0 +1,44 @@
+.css-bq11r7{
+    padding-top: 10% !important;
+    padding-bottom: 10%;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+.css-1h15ts-MuiPaper-root-MuiCard-root {
+    padding-top: 10%;
+    padding-bottom: 10%;
+}
+
+.css-xn6ruc {
+    display: flex;
+}
+
+.left_t {
+    text-align: left;
+    width: 200px;
+}
+
+.right_t {
+    text-align: right;
+    font-size: larger;
+    width: 200px;
+}
+
+.bton_oba {
+    width: 100px;
+    height: 50px;
+    border-radius: 10%;
+    color: #fff;
+    background-color: #fe914d;
+    border-color: #fe914d;
+    border-width: inherit;
+    position: relative;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.Imgg {
+    width: 100%;
+    border-radius: 2%;
+}
