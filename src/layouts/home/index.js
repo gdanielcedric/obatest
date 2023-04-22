@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /**
 =========================================================
@@ -19,10 +20,8 @@ import axios from "axios";
 
 // @mui material components
 import Grid from "@mui/material/Grid";
-import { Modal, Box, Button, TextField } from "@mui/material";
-import Card from "@mui/material/Card";
-import Divider from "@mui/material/Divider";
-import Icon from "@mui/material/Icon";
+import { Modal, Box, Button, TextField, Card, Divider, Icon } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
 
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
@@ -40,6 +39,8 @@ import bordereauImg from "../../assets/images/oba_bordereau.png";
 
 // eslint-disable-next-line camelcase
 const endpoint_oba = process.env.REACT_APP_OBA_ENDPOINT;
+// eslint-disable-next-line camelcase
+// const local_endpoint = process.env.REACT_APP_LOCAL_ENDPOINT;
 
 const style = {
   position: "absolute",
@@ -60,11 +61,27 @@ function Home() {
   // Declare variables
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState({});
+  const [infoCred, setInfoCred] = useState({});
+  const [idClt, setIdClt] = useState("");
+  const [idPrd, setIdPrd] = useState("");
   const [number, setNumber] = useState("");
-  const [amount, setAmount] = useState(0);
+  const [amountt, setAmount] = useState(0);
   const [open, setOpen] = React.useState(false);
+  const [msgNotif, setMsgNotif] = useState("");
+  const [vsBox, setVsBox] = useState("none");
+  const [state, setState] = React.useState({
+    openn: false,
+    vertical: "top",
+    horizontal: "center",
+  });
+  const { vertical, horizontal, openn } = state;
 
-  useEffect(() => {
+  const showMsg = (msg) => {
+    setMsgNotif(msg);
+    setState({ openn: true, vertical: "top", horizontal: "center" });
+  };
+
+  const loadProducts = () => {
     axios({
       method: "get",
       // eslint-disable-next-line camelcase
@@ -86,8 +103,188 @@ function Home() {
       })
       .catch((Error) => {
         console.log("Erreur :", Error);
+        showMsg(Error.response.statusText);
       });
+  };
+
+  useEffect(() => {
+    loadProducts();
   }, []);
+
+  const getInfoCredit = (val) => {
+    const dta = { id: val };
+    axios
+      .post("api/credits/findCreditById", dta)
+      .then((Response) => {
+        // get result
+        const result = Response.data;
+
+        showMsg(result.msg);
+
+        // eslint-disable-next-line no-empty
+        if (result.status) {
+          setInfoCred(result.res[0]);
+          setVsBox("flex");
+          setSelectedProduct({});
+          setAmount(0);
+          setNumber("");
+        }
+      })
+      .catch((Error) => {
+        console.log("Erreur :", Error);
+        const err = Error.response;
+        if (err.status === 500) showMsg(err.statusText);
+        else showMsg(err.data.msg);
+      });
+  };
+
+  const saveCredit = () => {
+    const dta = {
+      idClient: idClt,
+      idProduct: idPrd,
+      amount: parseInt(amountt, 10),
+      durationInDays: selectedProduct.durationInDays,
+      minAmount: selectedProduct.minAmount,
+      maxAmount: selectedProduct.maxAmount,
+    };
+    axios
+      .post("api/credits/insertCredit", dta)
+      .then((Response) => {
+        // get result
+        const result = Response.data;
+
+        showMsg(result.msg);
+
+        // eslint-disable-next-line no-empty
+        if (result.status) {
+          getInfoCredit(result.res[0]);
+        }
+      })
+      .catch((Error) => {
+        console.log("Erreur :", Error);
+        const err = Error.response;
+        if (err.status === 500) showMsg(err.statusText);
+        else showMsg(err.data.msg);
+      });
+  };
+
+  const saveClient = (val) => {
+    console.log("numero", val);
+    const dta = { phone: val };
+    axios
+      .post("api/clients/insertClient", dta)
+      .then((Response) => {
+        // get result
+        const result = Response.data;
+
+        showMsg(result.msg);
+
+        if (result.status) {
+          //
+          if (result.msg === "OK") setIdClt(result.res[0]);
+          else setIdClt(result.res[0].id);
+
+          // save credit
+          saveCredit();
+        }
+      })
+      .catch((Error) => {
+        console.log("Erreur :", Error);
+        const err = Error.response;
+        if (err.status === 500) showMsg(err.statusText);
+        else showMsg(err.data.msg);
+      });
+  };
+
+  const checkExistNumber = (val) => {
+    console.log("numero", val);
+    const dta = { phone: val };
+    axios
+      .post("api/credits/findCreditByPhone", dta)
+      .then((Response) => {
+        // get result
+        const result = Response.data;
+
+        // notif
+        showMsg(result.msg);
+
+        if (result.status) {
+          setInfoCred(result.res);
+          setVsBox("flex");
+          setSelectedProduct({});
+          setAmount(0);
+          setNumber("");
+        }
+      })
+      .catch((Error) => {
+        console.log("Erreur :", Error);
+        const err = Error.response;
+        if (err.status === 404) saveClient(val);
+        else if (err.status === 500) showMsg(err.statusText);
+        else showMsg(err.data.msg);
+      });
+  };
+
+  const saveProduct = (val) => {
+    console.log("product", val);
+    const dta = {
+      code: val.code,
+      minAmount: val.minAmount,
+      maxAmount: val.maxAmount,
+      creditFeesAmount: val.creditFeesAmount,
+      interestRate: val.interestRate,
+      durationInDays: val.durationInDays,
+    };
+    axios
+      .post("api/products/insertProduct", dta)
+      .then((Response) => {
+        // get result
+        const result = Response.data;
+
+        showMsg(result.msg);
+
+        if (result.status) {
+          setIdPrd(result.res[0]);
+          // verifier si l'utilisateur n'a pas deja contracte de pret
+          checkExistNumber(number);
+        }
+      })
+      .catch((Error) => {
+        console.log("Erreur :", Error);
+        const err = Error.response;
+        if (err.status === 500) showMsg(err.statusText);
+        else showMsg(err.data.msg);
+      });
+  };
+
+  const checkExistProduct = (val) => {
+    console.log("code", val.code);
+    const dta = { code: val.code };
+    axios
+      .post("api/products/findProduct", dta)
+      .then((Response) => {
+        console.log("response", Response);
+        // get result
+        const result = Response.data;
+
+        // notif
+        showMsg(result.msg);
+
+        if (result.status) {
+          setIdPrd(result.res[0].id);
+
+          // verifier si l'utilisateur n'a pas deja contracte de pret
+          checkExistNumber(number);
+        }
+      })
+      .catch((Error) => {
+        console.log("Erreur :", Error);
+        const err = Error.response;
+        if (err.status === 404) saveProduct(val);
+        else if (err.status === 500) showMsg(err.statusText);
+        else showMsg(err.data.msg);
+      });
+  };
 
   const handleTake = (value) => {
     console.log("selected value", value);
@@ -107,14 +304,29 @@ function Home() {
     setAmount(event.target.value);
   };
 
+  const handleCloseNotif = () => {
+    setState({ ...state, openn: false });
+  };
+
   const handleSubmit = () => {
     console.log("produit selectionne", selectedProduct);
-    console.log("montant souhaite", amount);
+    console.log("montant souhaite", amountt);
     console.log("numero de telephone", number);
+    //
+    handleClose();
+    // verifier l'existence du produit dans notre bd locale
+    checkExistProduct(selectedProduct);
   };
 
   return (
     <>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={openn}
+        onClose={handleCloseNotif}
+        message={msgNotif}
+        key={vertical + horizontal}
+      />
       <PageLayout>
         <DefaultNavbar />
         <MDBox py={3}>
@@ -188,13 +400,60 @@ function Home() {
               ))}
             </Grid>
           </MDBox>
-          <MDBox>
-            <Grid container spacing={3}>
+          <MDBox mt={4.5}>
+            <Grid container spacing={3} style={{ display: vsBox }}>
               <Grid item xs={12} md={6} lg={8}>
-                Bloc 4
+                <Card id="detail" style={{ backgroundColor: "#fe914d" }}>
+                  <MDBox pb={2} px={2} textAlign="center" lineHeight={1.25}>
+                    <tr className="wtr">
+                      <td className="left_t"> Code Produit </td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.codeProduct} </td>
+                    </tr>
+                    <Divider />
+                    <tr className="wtr">
+                      <td className="left_t"> Credit contracté le </td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.creationDate} </td>
+                    </tr>
+                    <tr className="wtr">
+                      <td className="left_t"> Delai de remboursement </td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.durationInDays} jours</td>
+                    </tr>
+                    <tr className="wtr">
+                      <td className="left_t"> Date de remboursement</td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.issueDate} </td>
+                    </tr>
+                  </MDBox>
+                </Card>
               </Grid>
               <Grid item xs={12} md={6} lg={4}>
-                Bloc 5
+                <Card id="detail" style={{ backgroundColor: "#000" }}>
+                  <MDBox pb={2} px={2} textAlign="center" lineHeight={1.25}>
+                    <tr className="wtr">
+                      <td className="left_t"> Montant demande </td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.requestedAmount} XOF </td>
+                    </tr>
+                    <tr className="wtr">
+                      <td className="left_t"> Frais de souscription </td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.creditFeesAmount} XOF </td>
+                    </tr>
+                    <tr className="wtr">
+                      <td className="left_t"> Taux intérêt </td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.interestRate} % </td>
+                    </tr>
+                    <tr className="wtr">
+                      <td className="left_t"> Montant à rembourser </td>
+                      <td> : </td>
+                      <td className="right_t"> {infoCred.dueAmount} XOF </td>
+                    </tr>
+                  </MDBox>
+                </Card>
               </Grid>
             </Grid>
           </MDBox>
@@ -233,7 +492,7 @@ function Home() {
               id="standard-basic"
               label="Montant souhaite"
               variant="standard"
-              value={amount}
+              value={amountt}
               onChange={handleSetAmount}
               type="number"
             />

@@ -1,3 +1,7 @@
+body {
+    text-transform: uppercase;
+}
+
 .css-bq11r7{
     padding-top: 10% !important;
     padding-bottom: 10%;
@@ -14,15 +18,31 @@
     display: flex;
 }
 
+.css-17li347-MuiDivider-root {
+    background-color: #fff;
+}
+
+.css-15m7mkq {
+    background: linear-gradient(195deg, #fe914d, #f07117) !important;
+}
+
+.css-w51ld2 {
+    background: #000000ed !important;
+}
+
+.css-1x3v3vy {
+    background: linear-gradient(195deg, #fe914d, #f07117) !important;
+}
+
 .left_t {
     text-align: left;
-    width: 200px;
+    width: 50%;
 }
 
 .right_t {
-    text-align: right;
+    text-align: left;
     font-size: larger;
-    width: 200px;
+    width: 50%;
 }
 
 .bton_oba {
@@ -41,4 +61,8 @@
 .Imgg {
     width: 100%;
     border-radius: 2%;
+}
+
+.wtr {
+    color: #fff !important;
 }

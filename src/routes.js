@@ -38,10 +38,9 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Home from "layouts/home";
 import Dashboard from "layouts/dashboard";
-import Tables from "layouts/tables";
-import Billing from "layouts/billing";
+import Credits from "layouts/credits";
+import Clients from "layouts/clients";
 import SignIn from "layouts/authentication/sign-in";
-import SignUp from "layouts/authentication/sign-up";
 
 // @mui icons
 import Icon from "@mui/material/Icon";
@@ -73,27 +72,19 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Tables",
-    key: "tables",
-    icon: <Icon fontSize="small">table_view</Icon>,
-    route: "/tables",
-    component: <Tables />,
+    name: "Clients",
+    key: "clients",
+    icon: <Icon fontSize="small">person</Icon>,
+    route: "/clients",
+    component: <Clients />,
   },
   {
     type: "collapse",
-    name: "Billing",
-    key: "billing",
-    icon: <Icon fontSize="small">receipt_long</Icon>,
-    route: "/billing",
-    component: <Billing />,
-  },
-  {
-    type: "collapse",
-    name: "Sign Up",
-    key: "sign-up",
-    icon: <Icon fontSize="small">assignment</Icon>,
-    route: "/authentication/sign-up",
-    component: <SignUp />,
+    name: "Credits",
+    key: "credits",
+    icon: <Icon fontSize="small">money</Icon>,
+    route: "/credits",
+    component: <Credits />,
   },
 ];
 

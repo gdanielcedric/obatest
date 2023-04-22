@@ -26,7 +26,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-function Dashboard() {
+function User() {
   const tken = sessionStorage.getItem("accessToken");
 
   return tken ? (
@@ -46,4 +46,4 @@ function Dashboard() {
   );
 }
 
-export default Dashboard;
+export default User;
