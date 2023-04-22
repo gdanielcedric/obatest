@@ -26,6 +26,12 @@ import { MDBDataTable } from "mdbreact";
 // Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
+import "@fortawesome/fontawesome-free/css/all.min.css";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import "bootstrap-css-only/css/bootstrap.min.css";
+import "mdbreact/dist/css/mdb.css";
+
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
@@ -33,7 +39,8 @@ import Footer from "examples/Footer";
 
 function Clients() {
   const tken = sessionStorage.getItem("accessToken");
-  const [clients, setClients] = useState([]);
+  // const [clients, setClients] = useState([]);
+  const [data, setData] = useState({});
   const [msgNotif, setMsgNotif] = useState("");
   const [state, setState] = React.useState({
     openn: false,
@@ -45,6 +52,25 @@ function Clients() {
   const showMsg = (msg) => {
     setMsgNotif(msg);
     setState({ openn: true, vertical: "top", horizontal: "center" });
+  };
+
+  const getData = (res) => {
+    const dta = {
+      columns: [],
+      rows: [],
+    };
+    // affect results to rows
+    dta.rows = res;
+    // format column
+    Object.keys(res[0]).forEach((key) => {
+      dta.columns.push({
+        label: key,
+        field: key,
+        sort: "asc",
+      });
+    });
+    // set data
+    setData(dta);
   };
 
   const loadClients = () => {
@@ -67,7 +93,9 @@ function Clients() {
         if (result.status) {
           console.log("Liste clients :", result.res);
           // bind clients
-          setClients(result.res);
+          // setClients(result.res);
+          // dta
+          getData(result.res);
         }
       })
       .catch((Error) => {
@@ -99,7 +127,9 @@ function Clients() {
       <MDBox py={3}>
         <MDBox mt={4.5}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={6} lg={12} />
+            <Grid item xs={12} md={6} lg={12}>
+              <MDBDataTable striped bordered small data={data} />
+            </Grid>
           </Grid>
         </MDBox>
       </MDBox>
