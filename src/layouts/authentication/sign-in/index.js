@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable camelcase */
 /**
 =========================================================
 * Material Dashboard 2 React - v2.1.0
@@ -30,6 +32,8 @@ import MDButton from "components/MDButton";
 // Authentication layout components
 import BasicLayout from "layouts/authentication/components/BasicLayout";
 import { Navigate } from "react-router-dom";
+
+const local_endpoint = process.env.REACT_APP_LOCAL_ENDPOINT;
 
 export default function Basic() {
   const [rememberMe, setRememberMe] = useState(false);
@@ -67,7 +71,7 @@ export default function Basic() {
     e.preventDefault();
     const dta = { username: usrname, password: pwd };
     axios
-      .post("../api/users/findUser", dta)
+      .post(`${local_endpoint}api/users/findUser`, dta)
       .then((Response) => {
         // get result
         const result = Response.data;
@@ -77,9 +81,9 @@ export default function Basic() {
 
         // eslint-disable-next-line no-empty
         if (result.status) {
-          setAccessToken(result.accessToken);
+          setAccessToken(result.access);
           // save into variable session
-          sessionStorage.setItem("accessToken", result.accessToken);
+          sessionStorage.setItem("accessToken", result.access);
         }
       })
       .catch((Error) => {

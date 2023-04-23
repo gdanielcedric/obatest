@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable camelcase */
 /**
 =========================================================
 * Material Dashboard 2 React - v2.1.0
@@ -36,6 +38,8 @@ import "mdbreact/dist/css/mdb.css";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
+
+const local_endpoint = process.env.REACT_APP_LOCAL_ENDPOINT;
 
 function Clients() {
   const tken = sessionStorage.getItem("accessToken");
@@ -77,7 +81,7 @@ function Clients() {
     axios({
       method: "get",
       // eslint-disable-next-line camelcase
-      url: "api/clients/allClients",
+      url: `${local_endpoint}api/clients/allClients`,
       mode: "cors",
       headers: {
         "Content-Type": "application/json",

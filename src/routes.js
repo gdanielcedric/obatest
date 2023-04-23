@@ -38,8 +38,9 @@ Coded by www.creative-tim.com
 // Material Dashboard 2 React layouts
 import Home from "layouts/home";
 import Dashboard from "layouts/dashboard";
-import Credits from "layouts/credits";
 import Clients from "layouts/clients";
+import Credits from "layouts/credits";
+import Products from "layouts/products";
 import SignIn from "layouts/authentication/sign-in";
 
 // @mui icons
@@ -85,6 +86,14 @@ const routes = [
     icon: <Icon fontSize="small">money</Icon>,
     route: "/credits",
     component: <Credits />,
+  },
+  {
+    type: "collapse",
+    name: "Products",
+    key: "products",
+    icon: <Icon fontSize="small">book</Icon>,
+    route: "/products",
+    component: <Products />,
   },
 ];
 

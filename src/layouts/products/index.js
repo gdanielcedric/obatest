@@ -41,9 +41,9 @@ import Footer from "examples/Footer";
 
 const local_endpoint = process.env.REACT_APP_LOCAL_ENDPOINT;
 
-function Credits() {
+function Products() {
   const tken = sessionStorage.getItem("accessToken");
-  // const [clients, setClients] = useState([]);
+  // const [products, setproducts] = useState([]);
   const [data, setData] = useState({});
   const [msgNotif, setMsgNotif] = useState("");
   const [state, setState] = React.useState({
@@ -77,11 +77,11 @@ function Credits() {
     setData(dta);
   };
 
-  const loadCredits = () => {
+  const loadproducts = () => {
     axios({
       method: "get",
       // eslint-disable-next-line camelcase
-      url: `${local_endpoint}api/credits/allCredits`,
+      url: `${local_endpoint}api/products/allProducts`,
       mode: "cors",
       headers: {
         "Content-Type": "application/json",
@@ -95,9 +95,9 @@ function Credits() {
         const result = Response.data;
 
         if (result.status) {
-          console.log("Liste credits :", result.res);
-          // bind clients
-          // setClients(result.res);
+          console.log("Liste products :", result.res);
+          // bind products
+          // setproducts(result.res);
           // dta
           getData(result.res);
         }
@@ -111,7 +111,7 @@ function Credits() {
   };
 
   useEffect(() => {
-    loadCredits();
+    loadproducts();
   }, []);
 
   const handleCloseNotif = () => {
@@ -144,4 +144,4 @@ function Credits() {
   );
 }
 
-export default Credits;
+export default Products;

@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /**
@@ -37,10 +38,12 @@ import "../../assets/css/custom.css";
 import bgImg from "../../assets/images/65ce3706-19b0-4cd7-be4f-b14f8e6e4ab3.jpg";
 import bordereauImg from "../../assets/images/oba_bordereau.png";
 
+// appname
+const app = process.env.REACT_APP_APPNAME;
 // eslint-disable-next-line camelcase
 const endpoint_oba = process.env.REACT_APP_OBA_ENDPOINT;
 // eslint-disable-next-line camelcase
-// const local_endpoint = process.env.REACT_APP_LOCAL_ENDPOINT;
+const local_endpoint = process.env.REACT_APP_LOCAL_ENDPOINT;
 
 const style = {
   position: "absolute",
@@ -59,6 +62,7 @@ const style = {
 
 function Home() {
   // Declare variables
+  const [access_token, setAccessToken] = useState();
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState({});
   const [infoCred, setInfoCred] = useState({});
@@ -81,15 +85,15 @@ function Home() {
     setState({ openn: true, vertical: "top", horizontal: "center" });
   };
 
-  const loadProducts = () => {
+  const loadProducts = (token) => {
     axios({
       method: "get",
       // eslint-disable-next-line camelcase
-      url: endpoint_oba,
+      url: `${local_endpoint}api/products/allProducts`,
       mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      // headers: {
+      //   Authorization: token,
+      // },
     })
       .then((Response) => {
         if (Response.status !== 200) {
@@ -97,9 +101,10 @@ function Home() {
         }
         // get result
         const result = Response.data;
-        console.log("resultat", result.produit);
+        console.log("resultat", result);
+
         // bind products
-        setProducts(result.produit);
+        if (result.status) setProducts(result.res);
       })
       .catch((Error) => {
         console.log("Erreur :", Error);
@@ -107,14 +112,46 @@ function Home() {
       });
   };
 
+  const initializApp = () => {
+    const dta = { appname: app };
+    axios({
+      method: "post",
+      url: `${local_endpoint}api/Token/reGenToken`,
+      data: dta,
+      headers: { "Content-Type": "multipart/form-data" },
+    })
+      .then((Response) => {
+        console.log("response initializ", Response);
+
+        if (Response.status === 200) {
+          // affect result
+          const result = Response.data;
+          if (result.status) {
+            // save in access_token
+            setAccessToken(result.access_token);
+            // save in session
+            // sessionStorage.setItem("access_token", result.access_token);
+            // load all products
+          }
+        }
+      })
+      .catch((Error) => {
+        console.log("Erreur :", Error);
+        const err = Error.response;
+        if (err.status === 500) showMsg(err.statusText);
+        else showMsg(err.data.msg);
+      });
+  };
+
   useEffect(() => {
+    initializApp();
     loadProducts();
   }, []);
 
   const getInfoCredit = (val) => {
     const dta = { id: val };
     axios
-      .post("api/credits/findCreditById", dta)
+      .post(`${local_endpoint}api/credits/findCreditById`, dta)
       .then((Response) => {
         // get result
         const result = Response.data;
@@ -148,7 +185,7 @@ function Home() {
       maxAmount: selectedProduct.maxAmount,
     };
     axios
-      .post("api/credits/insertCredit", dta)
+      .post(`${local_endpoint}api/credits/insertCredit`, dta)
       .then((Response) => {
         // get result
         const result = Response.data;
@@ -172,7 +209,7 @@ function Home() {
     console.log("numero", val);
     const dta = { phone: val };
     axios
-      .post("api/clients/insertClient", dta)
+      .post(`${local_endpoint}api/clients/insertClient`, dta)
       .then((Response) => {
         // get result
         const result = Response.data;
@@ -200,7 +237,7 @@ function Home() {
     console.log("numero", val);
     const dta = { phone: val };
     axios
-      .post("api/credits/findCreditByPhone", dta)
+      .post(`${local_endpoint}api/credits/findCreditByPhone`, dta)
       .then((Response) => {
         // get result
         const result = Response.data;
@@ -236,7 +273,7 @@ function Home() {
       durationInDays: val.durationInDays,
     };
     axios
-      .post("api/products/insertProduct", dta)
+      .post(`${local_endpoint}api/products/insertProduct`, dta)
       .then((Response) => {
         // get result
         const result = Response.data;
@@ -261,7 +298,8 @@ function Home() {
     console.log("code", val.code);
     const dta = { code: val.code };
     axios
-      .post("api/products/findProduct", dta)
+      // eslint-disable-next-line camelcase
+      .post(`${local_endpoint}api/products/findProduct`, dta)
       .then((Response) => {
         console.log("response", Response);
         // get result
@@ -330,10 +368,10 @@ function Home() {
       <PageLayout>
         <DefaultNavbar />
         <MDBox py={3}>
-          <MDBox>
+          <MDBox mt={4.5}>
             <img src={bgImg} className="Imgg" alt="votre pret en temps reel" />
           </MDBox>
-          <MDBox>
+          <MDBox mt={4.5}>
             <img src={bordereauImg} className="Imgg" alt="voir nos offres" />
           </MDBox>
           <MDBox mt={4.5}>

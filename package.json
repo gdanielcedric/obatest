@@ -60,7 +60,7 @@
       "react-app/jest"
     ]
   },
-  "proxy": "https://api-oba.akpany.ci/",
+  "proxy": "https://api-oba.akpany.ci",
   "browser": {
     "crypto": false,
     "fs": false,
